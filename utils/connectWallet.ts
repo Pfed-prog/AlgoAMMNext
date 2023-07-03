@@ -1,17 +1,26 @@
 import { PeraWalletConnect } from '@perawallet/connect';
 
-const peraWallet = new PeraWalletConnect({
-  shouldShowSignTxnToast: false,
-});
+export const connectToPera = async (
+  setAddresses: Function,
+  setAddress: Function,
+  peraWallet: PeraWalletConnect
+) => {
+  function handleDisconnectWalletClick() {
+    peraWallet.disconnect();
+    setAddresses([]);
+    setAddress(0);
+  }
 
-export const connectToMyAlgo = async (set: Function, setAddress: Function) => {
-  peraWallet.connect().then((newAccounts) => {
-    // Setup the disconnect event listener
-    // peraWallet.connector?.on('disconnect', handleDisconnectWalletClick);
-
-    set(newAccounts);
-    setAddress(newAccounts[0]);
-  });
-
-  console.log(888);
+  peraWallet
+    .connect()
+    .then((newAccounts) => {
+      peraWallet.connector?.on('disconnect', handleDisconnectWalletClick);
+      setAddresses(newAccounts);
+      setAddress(0);
+    })
+    .catch((error) => {
+      if (error?.data?.type !== 'CONNECT_MODAL_CLOSED') {
+        console.log(error);
+      }
+    });
 };

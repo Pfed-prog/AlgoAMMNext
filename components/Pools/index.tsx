@@ -5,14 +5,10 @@ import { PeraWalletConnect } from '@perawallet/connect';
 import AmountContainer from './AmountContainer';
 import { useStore, useResponse } from '@/store/store';
 import { Coin } from '@/store/types';
-import { connectToMyAlgo } from '@/utils/connectWallet';
+import { connectToPera } from '@/utils/connectWallet';
 import { queryGlobalPool, supplyAmm, withdrawAmm } from '@/services/transactions';
 
-const peraWallet = new PeraWalletConnect({
-  chainId: 416001,
-});
-
-const Pools = (contractAddress: string, appId: number) => {
+const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletConnect) => {
   const response = useResponse((state) => state.response);
   const setResponse = useResponse((state) => state.setResponse);
 
@@ -141,7 +137,8 @@ const Pools = (contractAddress: string, appId: number) => {
                       algoCoin.amount,
                       selectedAddress,
                       poolToken,
-                      setResponse
+                      setResponse,
+                      peraWallet
                     );
                 }}
                 m={4}
@@ -186,7 +183,8 @@ const Pools = (contractAddress: string, appId: number) => {
                         algoCoin.amount,
                         selectedAddress,
                         poolToken,
-                        setResponse
+                        setResponse,
+                        peraWallet
                       );
                   }}
                   m={4}
@@ -206,7 +204,7 @@ const Pools = (contractAddress: string, appId: number) => {
         ) : (
           <Button
             onClick={() => {
-              if (!selectedAddress) return connectToMyAlgo(setAddresses, selectAddress);
+              if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
             }}
             m={4}
             radius="xl"

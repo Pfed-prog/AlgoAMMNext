@@ -7,7 +7,7 @@ import AmountContainer from '@/components/Pools/AmountContainer';
 import SwapAmountContainer from '@/components/Swap/AmountContainer';
 import { Coin } from '@/store/types';
 import { useStore } from '@/store/store';
-import { connectToMyAlgo } from '@/utils/connectWallet';
+import { connectToPera } from '@/utils/connectWallet';
 import { supplyAmm, withdrawAmm, queryApp, swap, redeem, OptInPool } from '@/services/transactions';
 import { AMMs } from 'contracts';
 
@@ -42,7 +42,8 @@ const MarketPage = () => {
   const [yesToken, setYesToken] = useState<number>(0);
   const [noToken, setNoToken] = useState<number>(0);
 
-  // const selectedAddress = useStore((state) => state.selectedAddress);
+  const selectedAddress = useStore((state) => state.selectedAddress);
+
   const setAddresses = useStore((state) => state.setAddresses);
   const selectAddress = useStore((state) => state.selectAddress);
 
@@ -70,12 +71,11 @@ const MarketPage = () => {
     }
   };
 
-  const [accountAddress, setAccountAddress] = useState<string | null>(null);
-
   function handleDisconnectWalletClick() {
     peraWallet.disconnect();
 
-    setAccountAddress(null);
+    setAddresses([]);
+    selectAddress(0);
   }
 
   useEffect(() => {
@@ -85,8 +85,10 @@ const MarketPage = () => {
       .then((accounts) => {
         peraWallet.connector?.on('disconnect', handleDisconnectWalletClick);
 
+        setAddresses(accounts);
+
         if (accounts.length) {
-          setAccountAddress(accounts[0]);
+          selectAddress(0);
         }
       })
       .catch((e) => console.log(e));
@@ -170,19 +172,20 @@ const MarketPage = () => {
 
           <AmountContainer coin={algoCoin} setCoin={setAlgoCoin} />
 
-          {accountAddress ? (
+          {selectedAddress ? (
             <>
               {result > 0 ? (
                 <Button
                   onClick={() => {
-                    if (accountAddress && algoCoin.amount)
+                    if (selectedAddress && algoCoin.amount)
                       return withdrawAmm(
                         contractAddress,
                         appId,
                         algoCoin.amount,
-                        accountAddress,
+                        selectedAddress,
                         poolToken,
-                        setResponse
+                        setResponse,
+                        peraWallet
                       );
                   }}
                   m={4}
@@ -200,12 +203,12 @@ const MarketPage = () => {
                 <>
                   <Button
                     onClick={() => {
-                      if (accountAddress && algoCoin.amount)
+                      if (selectedAddress && algoCoin.amount)
                         return supplyAmm(
                           contractAddress,
                           appId,
                           algoCoin.amount,
-                          accountAddress,
+                          selectedAddress,
                           yesToken,
                           noToken,
                           poolToken,
@@ -220,14 +223,15 @@ const MarketPage = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      if (accountAddress && algoCoin.amount)
+                      if (selectedAddress && algoCoin.amount)
                         return withdrawAmm(
                           contractAddress,
                           appId,
                           algoCoin.amount,
-                          accountAddress,
+                          selectedAddress,
                           poolToken,
-                          setResponse
+                          setResponse,
+                          peraWallet
                         );
                     }}
                     m={4}
@@ -247,7 +251,7 @@ const MarketPage = () => {
           ) : (
             <Button
               onClick={() => {
-                if (!accountAddress) return connectToMyAlgo(setAddresses, selectAddress);
+                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
               }}
               m={4}
               radius="xl"
@@ -339,8 +343,9 @@ const MarketPage = () => {
             <>
               <Button
                 onClick={() => {
-                  if (!accountAddress) return connectToMyAlgo(setAddresses, selectAddress);
-                  if (accountAddress && coin_2?.amount)
+                  if (!selectedAddress)
+                    return connectToPera(setAddresses, selectAddress, peraWallet);
+                  if (selectedAddress && coin_2?.amount)
                     return swap(
                       contractAddress,
                       appId,
@@ -349,14 +354,15 @@ const MarketPage = () => {
                       poolToken,
                       yesToken,
                       noToken,
-                      accountAddress,
-                      setResponse
+                      selectedAddress,
+                      setResponse,
+                      peraWallet
                     );
                 }}
                 m={4}
                 radius="xl"
               >
-                {accountAddress ? 'Swap' : 'Connect to wallet'}
+                {selectedAddress ? 'Swap' : 'Connect to wallet'}
               </Button>
 
               {coin_2.amount ? (
@@ -376,8 +382,8 @@ const MarketPage = () => {
           ) : (
             <Button
               onClick={() => {
-                if (!accountAddress) return connectToMyAlgo(setAddresses, selectAddress);
-                if (accountAddress && coin_2?.amount)
+                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
+                if (selectedAddress && coin_2?.amount)
                   return redeem(
                     contractAddress,
                     appId,
@@ -385,14 +391,15 @@ const MarketPage = () => {
                     coin_2?.token,
                     yesToken,
                     noToken,
-                    accountAddress,
-                    setResponse
+                    selectedAddress,
+                    setResponse,
+                    peraWallet
                   );
               }}
               m={4}
               radius="xl"
             >
-              {accountAddress ? 'Redeem' : 'Connect to wallet'}
+              {selectedAddress ? 'Redeem' : 'Connect to wallet'}
             </Button>
           )}
         </Stack>
@@ -400,13 +407,20 @@ const MarketPage = () => {
 
       <Space h="lg" />
 
-      {accountAddress ? (
+      {selectedAddress ? (
         <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
           <Stack>
             <Button
               onClick={() => {
-                if (accountAddress)
-                  return OptInPool(accountAddress, yesToken, noToken, poolToken, setResponse);
+                if (selectedAddress)
+                  return OptInPool(
+                    selectedAddress,
+                    yesToken,
+                    noToken,
+                    poolToken,
+                    setResponse,
+                    peraWallet
+                  );
               }}
               m={4}
               radius="xl"

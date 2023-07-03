@@ -2,8 +2,8 @@ import { PeraWalletConnect } from '@perawallet/connect';
 import algosdk from 'algosdk';
 
 import { connectAlgod, waitForConfirmation } from '@/utils/connectAlgod';
-import { usdcId } from 'contracts';
 import { GlobalStateIndices } from '@/store/types';
+import { usdcId } from 'contracts';
 
 const algodClient = connectAlgod();
 
@@ -16,7 +16,8 @@ export const swap = async (
   yesToken: number,
   noToken: number,
   selectedAddress: string,
-  setResponse: Function
+  setResponse: Function,
+  peraWallet: PeraWalletConnect
 ) => {
   try {
     var choice = '';
@@ -70,18 +71,24 @@ export const swap = async (
       foreignAssets
     );
 
-    const txnsArray = [txn1, txn2, txn3];
-    const groupID = algosdk.computeGroupID(txnsArray);
-    for (let i = 0; i < 3; i++) txnsArray[i].group = groupID;
+    try {
+      const signedTxnGroups = await peraWallet.signTransaction([
+        [{ txn: txn1, signers: [selectedAddress] }],
+        [{ txn: txn2, signers: [selectedAddress] }],
+        [{ txn: txn3, signers: [selectedAddress] }],
+      ]);
 
-    // const myAlgoConnect = new MyAlgoConnect();
-    // const signedTxns = await myAlgoConnect.signTransaction(txnsArray.map((txn) => txn.toByte()));
-    // const response = await algodClient.sendRawTransaction(signedTxns.map((tx) => tx.blob)).do();
-    // await waitForConfirmation(algodClient, response.txId, 4);
+      console.log(signedTxnGroups);
 
-    // setResponse(response);
+      // Sign every txn in the group
+      for (const signedTxnGroup of signedTxnGroups) {
+        const { txId } = await algodClient.sendRawTransaction(signedTxnGroup).do();
 
-    // console.log('https://testnet.algoexplorer.io/tx/' + response['txId']);
+        console.log(`txns signed successfully! - txID: ${txId}`);
+      }
+    } catch (error) {
+      console.log("Couldn't sign all txns", error);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -95,7 +102,8 @@ export const redeem = async (
   yesToken: number,
   noToken: number,
   selectedAddress: string,
-  setResponse: Function
+  setResponse: Function,
+  peraWallet: PeraWalletConnect
 ) => {
   try {
     let tokenId = 0;
@@ -149,18 +157,24 @@ export const redeem = async (
       foreignAssets
     );
 
-    const txnsArray = [txn1, txn2, txn3];
-    const groupID = algosdk.computeGroupID(txnsArray);
-    for (let i = 0; i < 3; i++) txnsArray[i].group = groupID;
+    try {
+      const signedTxnGroups = await peraWallet.signTransaction([
+        [{ txn: txn1, signers: [selectedAddress] }],
+        [{ txn: txn2, signers: [selectedAddress] }],
+        [{ txn: txn3, signers: [selectedAddress] }],
+      ]);
 
-    /*     const myAlgoConnect = new MyAlgoConnect();
-    const signedTxns = await myAlgoConnect.signTransaction(txnsArray.map((txn) => txn.toByte()));
-    const response = await algodClient.sendRawTransaction(signedTxns.map((tx) => tx.blob)).do();
+      console.log(signedTxnGroups);
 
-    await waitForConfirmation(algodClient, response.txId, 4);
-    setResponse(response);
+      // Sign every txn in the group
+      for (const signedTxnGroup of signedTxnGroups) {
+        const { txId } = await algodClient.sendRawTransaction(signedTxnGroup).do();
 
-    console.log('https://testnet.algoexplorer.io/tx/' + response['txId']); */
+        console.log(`txns signed successfully! - txID: ${txId}`);
+      }
+    } catch (error) {
+      console.log("Couldn't sign all txns", error);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -276,7 +290,8 @@ export const setupAmm = async (
   contractAddress: string,
   appId: number,
   selectedAddress: string,
-  setResponse: Function
+  setResponse: Function,
+  peraWallet: PeraWalletConnect
 ) => {
   try {
     const params = await algodClient.getTransactionParams().do();
@@ -309,19 +324,23 @@ export const setupAmm = async (
       foreignAssets
     );
 
-    const txnsArray = [txn1, txn2];
-    const groupID = algosdk.computeGroupID(txnsArray);
-    for (let i = 0; i < 2; i++) txnsArray[i].group = groupID;
+    try {
+      const signedTxnGroups = await peraWallet.signTransaction([
+        [{ txn: txn1, signers: [selectedAddress] }],
+        [{ txn: txn2, signers: [selectedAddress] }],
+      ]);
 
-    /*     const myAlgoConnect = new MyAlgoConnect();
-    const signedTxns = await myAlgoConnect.signTransaction(txnsArray.map((txn) => txn.toByte()));
-    const response = await algodClient.sendRawTransaction(signedTxns.map((tx) => tx.blob)).do();
+      console.log(signedTxnGroups);
 
-    await waitForConfirmation(algodClient, response.txId, 4);
+      // Sign every txn in the group
+      for (const signedTxnGroup of signedTxnGroups) {
+        const { txId } = await algodClient.sendRawTransaction(signedTxnGroup).do();
 
-    setResponse(response);
-
-    console.log('https://testnet.algoexplorer.io/tx/' + response['txId']); */
+        console.log(`txns signed successfully! - txID: ${txId}`);
+      }
+    } catch (error) {
+      console.log("Couldn't sign all txns", error);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -332,7 +351,8 @@ export const OptInPool = async (
   yesToken: number,
   noToken: number,
   poolToken: number,
-  setResponse: Function
+  setResponse: Function,
+  peraWallet: PeraWalletConnect
 ) => {
   try {
     const params = await algodClient.getTransactionParams().do();
@@ -367,20 +387,24 @@ export const OptInPool = async (
       assetIndex: poolToken,
     });
 
-    const txnsArray = [txn1, txn2, txn3];
-    const groupID = algosdk.computeGroupID(txnsArray);
-    for (let i = 0; i < 3; i++) txnsArray[i].group = groupID;
+    try {
+      const signedTxnGroups = await peraWallet.signTransaction([
+        [{ txn: txn1, signers: [selectedAddress] }],
+        [{ txn: txn2, signers: [selectedAddress] }],
+        [{ txn: txn3, signers: [selectedAddress] }],
+      ]);
 
-    /*     const myAlgoConnect = new MyAlgoConnect();
-    const signedTxns = await myAlgoConnect.signTransaction(txnsArray.map((txn) => txn.toByte()));
+      console.log(signedTxnGroups);
 
-    const response = await algodClient.sendRawTransaction(signedTxns.map((tx) => tx.blob)).do();
+      // Sign every txn in the group
+      for (const signedTxnGroup of signedTxnGroups) {
+        const { txId } = await algodClient.sendRawTransaction(signedTxnGroup).do();
 
-    await waitForConfirmation(algodClient, response.txId, 4);
-
-    setResponse(response);
-
-    console.log('https://testnet.algoexplorer.io/tx/' + response['txId']); */
+        console.log(`txns signed successfully! - txID: ${txId}`);
+      }
+    } catch (error) {
+      console.log("Couldn't sign all txns", error);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -459,10 +483,6 @@ export const supplyAmm = async (
     } catch (error) {
       console.log("Couldn't sign all txns", error);
     }
-
-    //await waitForConfirmation(algodClient, response.txId, 4);
-
-    //setResponse(response);
   } catch (err) {
     console.error(err);
   }
@@ -474,7 +494,8 @@ export const withdrawAmm = async (
   poolTokenAmount: number,
   selectedAddress: string,
   poolToken: number,
-  setResponse: Function
+  setResponse: Function,
+  peraWallet: PeraWalletConnect
 ) => {
   try {
     const params = await algodClient.getTransactionParams().do();
@@ -520,18 +541,24 @@ export const withdrawAmm = async (
       foreignAssets
     );
 
-    const txnsArray = [txn1, txn2, txn3];
-    const groupID = algosdk.computeGroupID(txnsArray);
-    for (let i = 0; i < 3; i++) txnsArray[i].group = groupID;
+    try {
+      const signedTxnGroups = await peraWallet.signTransaction([
+        [{ txn: txn1, signers: [selectedAddress] }],
+        [{ txn: txn2, signers: [selectedAddress] }],
+        [{ txn: txn3, signers: [selectedAddress] }],
+      ]);
 
-    /*     const myAlgoConnect = new MyAlgoConnect();
-    const signedTxns = await myAlgoConnect.signTransaction(txnsArray.map((txn) => txn.toByte()));
-    const response = await algodClient.sendRawTransaction(signedTxns.map((tx) => tx.blob)).do();
+      console.log(signedTxnGroups);
 
-    await waitForConfirmation(algodClient, response.txId, 4);
+      // Sign every txn in the group
+      for (const signedTxnGroup of signedTxnGroups) {
+        const { txId } = await algodClient.sendRawTransaction(signedTxnGroup).do();
 
-    setResponse(response);
-    console.log('https://testnet.algoexplorer.io/tx/' + response['txId']); */
+        console.log(`txns signed successfully! - txID: ${txId}`);
+      }
+    } catch (error) {
+      console.log("Couldn't sign all txns", error);
+    }
   } catch (err) {
     console.error(err);
   }

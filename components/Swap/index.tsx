@@ -2,12 +2,13 @@ import { Paper, Stack, Button, Group, Badge, Text, Center } from '@mantine/core'
 import { useEffect, useState } from 'react';
 
 import AmountContainer from './AmountContainer';
-import { connectToMyAlgo } from '@/utils/connectWallet';
+import { connectToPera } from '@/utils/connectWallet';
 import { swap, redeem, queryGlobalSwap } from '@/services/transactions';
 import { useStore, useResponse } from '@/store/store';
 import { Coin } from '@/store/types';
+import { PeraWalletConnect } from '@perawallet/connect';
 
-const Swap = (contractAddress: string, appId: number) => {
+const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConnect) => {
   const response = useResponse((state) => state.response);
   const setResponse = useResponse((state) => state.setResponse);
 
@@ -156,7 +157,7 @@ const Swap = (contractAddress: string, appId: number) => {
           <>
             <Button
               onClick={() => {
-                if (!selectedAddress) return connectToMyAlgo(setAddresses, selectAddress);
+                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
                 if (selectedAddress && coin_2?.amount)
                   return swap(
                     contractAddress,
@@ -167,7 +168,8 @@ const Swap = (contractAddress: string, appId: number) => {
                     yesToken,
                     noToken,
                     selectedAddress,
-                    setResponse
+                    setResponse,
+                    peraWallet
                   );
               }}
               m={4}
@@ -193,7 +195,7 @@ const Swap = (contractAddress: string, appId: number) => {
         ) : (
           <Button
             onClick={() => {
-              if (!selectedAddress) return connectToMyAlgo(setAddresses, selectAddress);
+              if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
               if (selectedAddress && coin_2?.amount)
                 return redeem(
                   contractAddress,
@@ -203,7 +205,8 @@ const Swap = (contractAddress: string, appId: number) => {
                   yesToken,
                   noToken,
                   selectedAddress,
-                  setResponse
+                  setResponse,
+                  peraWallet
                 );
             }}
             m={4}
