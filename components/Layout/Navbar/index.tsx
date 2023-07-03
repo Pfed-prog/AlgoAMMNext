@@ -9,7 +9,6 @@ import {
   Transition,
 } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -113,8 +112,8 @@ export function Navbar({ links }: NavbarProps) {
       <Container className={classes.header}>
         <Link href="/" passHref>
           <Image
-            src="/SolidityLogo.svg"
-            alt="Pin Save EVM"
+            src="/logo.svg"
+            alt="AlgoAMM"
             width={140}
             height={35}
             className="block lg:hidden h-8 w-auto"
@@ -125,12 +124,6 @@ export function Navbar({ links }: NavbarProps) {
           {items}
         </Group>
         <Group spacing={5}>
-          <ConnectButton
-            accountStatus={{
-              smallScreen: 'avatar',
-              largeScreen: 'full',
-            }}
-          />
           <Burger opened={opened} onClick={() => toggle()} className={classes.burger} size="sm" />
         </Group>
 

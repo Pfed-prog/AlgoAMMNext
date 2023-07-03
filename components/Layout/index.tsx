@@ -1,5 +1,6 @@
 import { AppShell } from '@mantine/core';
 import React from 'react';
+
 import { Navbar } from './Navbar';
 
 interface LayoutProps {
