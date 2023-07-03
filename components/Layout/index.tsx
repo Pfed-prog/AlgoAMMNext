@@ -8,7 +8,10 @@ interface LayoutProps {
 }
 
 const LayoutApp = ({ children }: LayoutProps) => {
-  const links = [{ label: 'Home', link: '/' }];
+  const links = [
+    { label: 'Home', link: '/' },
+    { label: 'Pools', link: '/pools' },
+  ];
   return (
     <AppShell
       header={<Navbar links={links} />}

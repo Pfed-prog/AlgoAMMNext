@@ -1,5 +1,4 @@
 import '@/styles/styles.css';
-import '@rainbow-me/rainbowkit/styles.css';
 
 import { useState } from 'react';
 import { AppProps } from 'next/app';

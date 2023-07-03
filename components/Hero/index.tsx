@@ -1,4 +1,5 @@
 import { createStyles, Container, Title, Text, Button, rem } from '@mantine/core';
+import Link from 'next/link';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -94,19 +95,21 @@ export default function Hero() {
             </Title>
 
             <Text className={classes.description} mt={30}>
-              Build fully functional accessible web applications with ease – Mantine includes more
+              Build fully functional accessible web applications with ease. Mantine includes more
               than 100 customizable components and hooks to cover you in any situation
             </Text>
 
-            <Button
-              variant="gradient"
-              gradient={{ from: 'pink', to: 'yellow' }}
-              size="xl"
-              className={classes.control}
-              mt={40}
-            >
-              Get started
-            </Button>
+            <Link href="/pools">
+              <Button
+                variant="gradient"
+                gradient={{ from: 'pink', to: 'yellow' }}
+                size="xl"
+                className={classes.control}
+                mt={40}
+              >
+                Get started
+              </Button>
+            </Link>
           </div>
         </div>
       </Container>
