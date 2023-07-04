@@ -511,3 +511,95 @@ export const queryApp = async (
     }
   }
 };
+
+export const queryGlobalPool = async (
+  appId: number,
+  setYesToken: Function,
+  setNoToken: Function,
+  setPoolToken: Function,
+  setPoolTokensOutstanding: Function,
+  setPoolFundingReserves: Function,
+  setResult: Function
+) => {
+  const app = await algodClient.getApplicationByID(appId).do();
+  for (const [key, value] of Object.entries(app['params']['global-state'] as GlobalStateIndices)) {
+    if (value['key'] == 'eWVzX3Rva2VuX2tleQ==') {
+      setYesToken(value['value']['uint']);
+    }
+    if (value['key'] == 'bm9fdG9rZW5fa2V5') {
+      setNoToken(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF90b2tlbl9rZXk=') {
+      setPoolToken(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF90b2tlbnNfb3V0c3RhbmRpbmdfa2V5') {
+      setPoolTokensOutstanding(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF9mdW5kaW5nX3Jlc2VydmVz') {
+      setPoolFundingReserves(value['value']['uint']);
+    }
+    if (value['key'] == 'cmVzdWx0') {
+      setResult(value['value']['uint']);
+    }
+  }
+};
+
+export const queryGlobalSwap = async (
+  appId: number,
+  setYesToken: Function,
+  setNoToken: Function,
+  setPoolToken: Function,
+  setYesTokenReserves: Function,
+  setNoTokenReserves: Function,
+  setTokenFundingReserves: Function,
+  setPoolFundingReserves: Function,
+  setResult: Function
+) => {
+  const app = await algodClient.getApplicationByID(appId).do();
+  for (const [key, value] of Object.entries(app['params']['global-state'] as GlobalStateIndices)) {
+    if (value['key'] == 'eWVzX3Rva2VuX2tleQ==') {
+      setYesToken(value['value']['uint']);
+    }
+    if (value['key'] == 'bm9fdG9rZW5fa2V5') {
+      setNoToken(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF90b2tlbl9rZXk=') {
+      setPoolToken(value['value']['uint']);
+    }
+    if (value['key'] == 'eWVzX3Rva2Vuc19yZXNlcnZlcw==') {
+      setYesTokenReserves(value['value']['uint']);
+    }
+    if (value['key'] == 'bm9fdG9rZW5zX3Jlc2VydmVz') {
+      setNoTokenReserves(value['value']['uint']);
+    }
+    if (value['key'] == 'dG9rZW5fZnVuZGluZ19yZXNlcnZlcw==') {
+      setTokenFundingReserves(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF9mdW5kaW5nX3Jlc2VydmVz') {
+      setPoolFundingReserves(value['value']['uint']);
+    }
+    if (value['key'] == 'cmVzdWx0') {
+      setResult(value['value']['uint']);
+    }
+  }
+};
+
+export const queryGlobalConfig = async (
+  appId: number,
+  setYesToken: Function,
+  setNoToken: Function,
+  setPoolToken: Function
+) => {
+  const app = await algodClient.getApplicationByID(appId).do();
+  for (const [key, value] of Object.entries(app['params']['global-state'] as GlobalStateIndices)) {
+    if (value['key'] == 'eWVzX3Rva2VuX2tleQ==') {
+      setYesToken(value['value']['uint']);
+    }
+    if (value['key'] == 'bm9fdG9rZW5fa2V5') {
+      setNoToken(value['value']['uint']);
+    }
+    if (value['key'] == 'cG9vbF90b2tlbl9rZXk=') {
+      setPoolToken(value['value']['uint']);
+    }
+  }
+};
