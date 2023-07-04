@@ -1,4 +1,4 @@
-import { Paper, Text, Box, Image } from '@mantine/core';
+import { Paper, Text, Box, Image, Center } from '@mantine/core';
 import Link from 'next/link';
 
 import { AMMs } from 'contracts';
@@ -17,29 +17,19 @@ const PoolsPage = () => {
       {Object.entries(AMMs).map(([index, item]) => {
         return (
           <Paper
-            component="div"
+            component={Link}
             withBorder
             radius="lg"
             shadow="md"
             p="md"
-            sx={{ cursor: 'pointer', alignItems: 'center' }}
+            sx={{ cursor: 'pointer', alignItems: 'center', justifyContent: 'center' }}
             key={index}
+            href={`/market/${item.appId}`}
           >
-            <Image
-              width={270}
-              height={200}
-              src={item.image}
-              sx={{ align: 'center', alignItems: 'center', alignContent: 'center' }}
-            />
-            <Text
-              align="center"
-              mt="sm"
-              lineClamp={1}
-              size="xl"
-              variant="link"
-              component={Link}
-              href={`/market/${item.appId}`}
-            >
+            <Center>
+              <Image width={270} height={200} src={item.image} />
+            </Center>
+            <Text align="center" mt="sm" lineClamp={1} size="xl" variant="link" component="a">
               {item.question}
             </Text>
           </Paper>

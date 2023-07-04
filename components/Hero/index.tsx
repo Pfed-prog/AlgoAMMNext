@@ -97,7 +97,7 @@ export default function Hero() {
 
             <Text className={classes.description} mt={30}>
               Whether you're a seasoned trader or a curious looking to expand your Algo AMM is your
-              ultimate tool for predictive trading. Join of forward-thinking investors and be at the
+              ultimate tool for predictive trading. Join forward-thinking investors and be at the
               forefront of the prediction market revolution.
             </Text>
 
