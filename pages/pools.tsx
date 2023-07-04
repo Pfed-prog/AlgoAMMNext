@@ -1,4 +1,4 @@
-import { Paper, Text, Box } from '@mantine/core';
+import { Paper, Text, Box, Image } from '@mantine/core';
 import Link from 'next/link';
 
 import { AMMs } from 'contracts';
@@ -10,7 +10,7 @@ const PoolsPage = () => {
       sx={{
         gap: 20,
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 5fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 5fr))',
         gridTemplateRows: 'masonry',
       }}
     >
@@ -22,9 +22,15 @@ const PoolsPage = () => {
             radius="lg"
             shadow="md"
             p="md"
-            sx={{ cursor: 'pointer' }}
+            sx={{ cursor: 'pointer', alignItems: 'center' }}
             key={index}
           >
+            <Image
+              width={270}
+              height={200}
+              src={item.image}
+              sx={{ align: 'center', alignItems: 'center', alignContent: 'center' }}
+            />
             <Text
               align="center"
               mt="sm"

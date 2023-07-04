@@ -54,8 +54,9 @@ const useStyles = createStyles((theme) => ({
 
   description: {
     color: theme.white,
-    opacity: 0.75,
+    opacity: 0.85,
     maxWidth: rem(500),
+    fontSize: rem(19),
 
     [theme.fn.smallerThan('md')]: {
       maxWidth: '100%',
@@ -82,21 +83,22 @@ export default function Hero() {
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
-              A{' '}
+              An automated{' '}
               <Text
                 component="span"
                 inherit
                 variant="gradient"
                 gradient={{ from: 'pink', to: 'yellow' }}
               >
-                fully featured
+                Prediction Market
               </Text>{' '}
-              React components library
+              maker on Algorand
             </Title>
 
             <Text className={classes.description} mt={30}>
-              Build fully functional accessible web applications with ease. Mantine includes more
-              than 100 customizable components and hooks to cover you in any situation
+              Whether you're a seasoned trader or a curious looking to expand your Algo AMM is your
+              ultimate tool for predictive trading. Join of forward-thinking investors and be at the
+              forefront of the prediction market revolution.
             </Text>
 
             <Link href="/pools">
