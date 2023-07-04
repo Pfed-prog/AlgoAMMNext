@@ -9,14 +9,15 @@ import { Coin } from '@/store/types';
 import { useStore } from '@/store/store';
 import { connectToPera } from '@/utils/connectWallet';
 import { supplyAmm, withdrawAmm, queryApp, swap, redeem, OptInPool } from '@/services/transactions';
-import { AMMs } from 'contracts';
+import { AMMs, usdcId } from 'contracts';
 
 const peraWallet = new PeraWalletConnect({
-  chainId: 416001,
+  chainId: 416002,
 });
 
 const MarketPage = () => {
   const router = useRouter();
+
   const id = Number(router.query.id);
   const appId = AMMs[id]?.appId;
   const contractAddress = AMMs[id]?.contractAddress;
@@ -48,10 +49,10 @@ const MarketPage = () => {
   const selectAddress = useStore((state) => state.selectAddress);
 
   const whoWon = () => {
-    if (result == yesToken) {
+    if (result === yesToken) {
       return 'Yes';
     }
-    if (result == noToken) {
+    if (result === noToken) {
       return 'No';
     }
   };
@@ -79,7 +80,6 @@ const MarketPage = () => {
   }
 
   useEffect(() => {
-    // Reconnect to the session when the component is mounted
     peraWallet
       .reconnectSession()
       .then((accounts) => {
@@ -97,7 +97,7 @@ const MarketPage = () => {
   useEffect(() => {
     if (id) {
       queryApp(
-        Number(id),
+        id,
         setYesToken,
         setNoToken,
         setPoolToken,
@@ -418,6 +418,7 @@ const MarketPage = () => {
                     yesToken,
                     noToken,
                     poolToken,
+                    usdcId,
                     setResponse,
                     peraWallet
                   );

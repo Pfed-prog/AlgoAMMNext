@@ -8,7 +8,6 @@ const PoolsPage = () => {
     <Box
       mx="auto"
       sx={{
-        maxWidth: 1500,
         gap: 20,
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 5fr))',
