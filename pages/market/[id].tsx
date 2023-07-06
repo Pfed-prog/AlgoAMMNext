@@ -18,9 +18,8 @@ const peraWallet = new PeraWalletConnect({
 const MarketPage = () => {
   const router = useRouter();
 
-  const id = Number(router.query.id);
-  const appId = AMMs[id]?.appId;
-  const contractAddress = AMMs[id]?.contractAddress;
+  const [appId, setAppId] = useState<number | null>();
+  const [contractAddress, setContractAddress] = useState<string | null>();
 
   const [response, setResponse] = useState<string[]>([]);
 
@@ -95,21 +94,28 @@ const MarketPage = () => {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      queryApp(
-        id,
-        setYesToken,
-        setNoToken,
-        setPoolToken,
-        setYesTokenReserves,
-        setNoTokenReserves,
-        setPoolTokensOutstanding,
-        setPoolFundingReserves,
-        setTokenFundingReserves,
-        setResult
-      );
+    let hydrated = router.isReady;
+    if (hydrated) {
+      const id = Number(router.query.id);
+
+      setAppId(AMMs[id]?.appId);
+      setContractAddress(AMMs[id]?.contractAddress);
+      if (id) {
+        queryApp(
+          id,
+          setYesToken,
+          setNoToken,
+          setPoolToken,
+          setYesTokenReserves,
+          setNoTokenReserves,
+          setPoolTokensOutstanding,
+          setPoolFundingReserves,
+          setTokenFundingReserves,
+          setResult
+        );
+      }
     }
-  }, [response]);
+  }, [response, router.isReady]);
 
   return (
     <>
@@ -177,7 +183,7 @@ const MarketPage = () => {
               {result > 0 ? (
                 <Button
                   onClick={() => {
-                    if (selectedAddress && algoCoin.amount)
+                    if (selectedAddress && algoCoin.amount && contractAddress && appId)
                       return withdrawAmm(
                         contractAddress,
                         appId,
@@ -203,7 +209,7 @@ const MarketPage = () => {
                 <>
                   <Button
                     onClick={() => {
-                      if (selectedAddress && algoCoin.amount)
+                      if (selectedAddress && algoCoin.amount && contractAddress && appId)
                         return supplyAmm(
                           contractAddress,
                           appId,
@@ -223,7 +229,7 @@ const MarketPage = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      if (selectedAddress && algoCoin.amount)
+                      if (selectedAddress && algoCoin.amount && contractAddress && appId)
                         return withdrawAmm(
                           contractAddress,
                           appId,
@@ -345,7 +351,7 @@ const MarketPage = () => {
                 onClick={() => {
                   if (!selectedAddress)
                     return connectToPera(setAddresses, selectAddress, peraWallet);
-                  if (selectedAddress && coin_2?.amount)
+                  if (selectedAddress && coin_2?.amount && contractAddress && appId)
                     return swap(
                       contractAddress,
                       appId,
@@ -383,7 +389,7 @@ const MarketPage = () => {
             <Button
               onClick={() => {
                 if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
-                if (selectedAddress && coin_2?.amount)
+                if (selectedAddress && coin_2?.amount && contractAddress && appId)
                   return redeem(
                     contractAddress,
                     appId,

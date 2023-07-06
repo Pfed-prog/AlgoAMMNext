@@ -1,7 +1,7 @@
 import { PeraWalletConnect } from '@perawallet/connect';
 import algosdk from 'algosdk';
 
-import { connectAlgod } from '@/utils/connectAlgod';
+import { connectAlgod, waitForConfirmation } from '@/utils/connectAlgod';
 import { GlobalStateIndices } from '@/store/types';
 import { usdcId } from 'contracts';
 
@@ -73,7 +73,7 @@ export const supplyAmm = async (
       ]);
 
       const { txId } = await algodClient.sendRawTransaction(signedTxnGroups).do();
-
+      await waitForConfirmation(algodClient, txId, 4);
       setResponse(txId);
       console.log(`txns signed successfully! - txID: ${txId}`);
     } catch (error) {
@@ -158,7 +158,7 @@ export const swap = async (
         [{ txn: txn3, signers: [selectedAddress] }],
       ]);
       const { txId } = await algodClient.sendRawTransaction(signedTxnGroups).do();
-
+      await waitForConfirmation(algodClient, txId, 4);
       setResponse(txId);
       console.log(`txns signed successfully! - txID: ${txId}`);
     } catch (error) {
@@ -243,7 +243,7 @@ export const redeem = async (
       ]);
 
       const { txId } = await algodClient.sendRawTransaction(signedTxnGroups).do();
-
+      await waitForConfirmation(algodClient, txId, 4);
       setResponse(txId);
       console.log(`txns signed successfully! - txID: ${txId}`);
     } catch (error) {
@@ -302,7 +302,7 @@ export const setupAmm = async (
       ]);
 
       const { txId } = await algodClient.sendRawTransaction(signedTxnGroups).do();
-
+      await waitForConfirmation(algodClient, txId, 4);
       setResponse(txId);
       console.log(`txns signed successfully! - txID: ${txId}`);
     } catch (error) {
@@ -377,7 +377,7 @@ export const withdrawAmm = async (
       ]);
 
       const { txId } = await algodClient.sendRawTransaction(signedTxnGroups).do();
-
+      await waitForConfirmation(algodClient, txId, 4);
       setResponse(txId);
       console.log(`txns signed successfully! - txID: ${txId}`);
     } catch (error) {
