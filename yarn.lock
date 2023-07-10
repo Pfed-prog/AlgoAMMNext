@@ -894,10 +894,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@perawallet/connect@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@perawallet/connect/-/connect-1.2.3.tgz#99b3d5e9e86aa593f9d069d079a26160f4b63bf9"
-  integrity sha512-v+RJRvLG/3cOTHESX4ibxxRqkU/dh4PnU7Np0q5i8sXtsFUIwSbOAQ8ija3WB3LWcY1Ue1/24jH3qLM4hKHBMw==
+"@perawallet/connect@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@perawallet/connect/-/connect-1.2.4.tgz#ba3bbb2d4eb7204c20ed51570fa9622ea515e2f3"
+  integrity sha512-pUODa9BiSuXT7I/K9JEIZX6vJPv/GNkRgrTTSY0XNfNYmPMxp+E9zGch/9+kdPVSw1YWXWblYNTBKNy+yMqXpg==
   dependencies:
     "@evanhahn/lottie-web-light" "5.8.1"
     "@walletconnect/client" "^1.8.0"
