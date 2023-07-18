@@ -28,7 +28,7 @@
     "@mantine/prism": "6.0.2",
     "@next/bundle-analyzer": "^13.4.8",
     "@perawallet/connect": "^1.2.3",
-    "@tabler/icons-react": "^2.23.0",
+    "@tabler/icons-react": "^2.26.0",
     "@tanstack/react-query": "^4.29.19",
     "algosdk": "^2.4.0",
     "embla-carousel-react": "^7.0.3",
