@@ -29,7 +29,7 @@
     "@next/bundle-analyzer": "^13.4.8",
     "@perawallet/connect": "^1.2.3",
     "@tabler/icons-react": "^2.30.0",
-    "@tanstack/react-query": "^4.29.19",
+    "@tanstack/react-query": "^4.32.6",
     "algosdk": "^2.4.0",
     "embla-carousel-react": "^7.0.3",
     "next": "13.4.13",
