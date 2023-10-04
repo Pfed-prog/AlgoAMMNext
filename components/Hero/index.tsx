@@ -92,7 +92,7 @@ export default function Hero() {
               >
                 Prediction Market
               </Text>{' '}
-              maker on Algorand
+              maker
             </Title>
 
             <Text className={classes.description} mt={30}>
