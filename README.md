@@ -37,6 +37,9 @@ This template comes with several essential features:
 ### More Information
 
 [10 Algo: Algorand dispenser](https://bank.testnet.algorand.network/)
+
 [Algo and Euro dispenser](https://testnet.algoexplorer.io/dispenser)
+
 [5 Algo and 100 USDC dispenser](https://dispenser.testnet.aws.algodev.network/)
+
 [Pera Connect Docs](https://docs.perawallet.app/references/pera-connect)

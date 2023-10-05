@@ -116,7 +116,7 @@ export function Navbar({ links }: NavbarProps) {
             alt="AlgoAMM"
             width={140}
             height={35}
-            className="block lg:hidden h-8 w-auto"
+            className="block h-8 w-auto"
             priority
           />
         </Link>
@@ -126,7 +126,6 @@ export function Navbar({ links }: NavbarProps) {
         <Group spacing={5}>
           <Burger opened={opened} onClick={() => toggle()} className={classes.burger} size="sm" />
         </Group>
-
         <Transition transition="pop-top-right" duration={200} mounted={opened}>
           {(styles) => (
             <Paper className={classes.dropdown} withBorder style={styles}>
