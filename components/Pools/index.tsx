@@ -1,20 +1,20 @@
 import { Paper, Stack, Button, Badge, Text } from '@mantine/core';
-import { useState, useEffect } from 'react';
-import { PeraWalletConnect } from '@perawallet/connect';
+import { useState } from 'react';
 
 import AmountContainer from './AmountContainer';
-import { useStore, useResponse } from '@/store/store';
-import { Coin } from '@/store/types';
-import { connectToPera } from '@/utils/connectWallet';
-import { queryGlobalPool, supplyAmm, withdrawAmm } from '@/services/transactions';
+import { useStore } from '@/store/store';
 
-const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletConnect) => {
-  const response = useResponse((state) => state.response);
-  const setResponse = useResponse((state) => state.setResponse);
 
-  const [algoCoin, setAlgoCoin] = useState<Coin>({
-    token: 'USDC',
-  });
+const Pools = (option0: string, option1: string, amount: number, setAmount: Function) => {
+
+  const connectToTron = () => {
+    if (window.tronWeb?.defaultAddress.base58){
+      setAddress(window.tronWeb.defaultAddress.base58)
+    }
+    if (!window.tronWeb?.defaultAddress.base58){
+      console.log('install tronlink')
+    }
+  } 
 
   const yesToken = useStore((state) => state.yesToken);
   const noToken = useStore((state) => state.noToken);
@@ -22,9 +22,8 @@ const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletCon
   const result = useStore((state) => state.result);
   const poolFundingReserves = useStore((state) => state.poolFundingReserves);
   const poolTokensOutstanding = useStore((state) => state.poolTokensOutstanding);
-  const selectedAddress = useStore((state) => state.selectedAddress);
-  const setAddresses = useStore((state) => state.setAddresses);
-  const selectAddress = useStore((state) => state.selectAddress);
+  const address = useStore((state) => state.address);
+  const setAddress = useStore((state) => state.setAddress);
   const setYesToken = useStore((state) => state.setYesToken);
   const setNoToken = useStore((state) => state.setNoToken);
   const setPoolToken = useStore((state) => state.setPoolToken);
@@ -33,38 +32,6 @@ const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletCon
   const setResult = useStore((state) => state.setResult);
 
   const [accountAddress, setAccountAddress] = useState<string | null>(null);
-
-  useEffect(() => {
-    queryGlobalPool(
-      appId,
-      setYesToken,
-      setNoToken,
-      setPoolToken,
-      setPoolTokensOutstanding,
-      setPoolFundingReserves,
-      setResult
-    );
-  }, [response]);
-
-  useEffect(() => {
-    // Reconnect to the session when the component is mounted
-    peraWallet
-      .reconnectSession()
-      .then((accounts) => {
-        peraWallet.connector?.on('disconnect', handleDisconnectWalletClick);
-
-        if (accounts.length) {
-          setAccountAddress(accounts[0]);
-        }
-      })
-      .catch((e) => console.log(e));
-  }, []);
-
-  function handleDisconnectWalletClick() {
-    peraWallet.disconnect();
-
-    setAccountAddress(null);
-  }
 
   return (
     <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
@@ -123,80 +90,42 @@ const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletCon
             </Text>
           </>
         )}
-        <AmountContainer coin={algoCoin} setCoin={setAlgoCoin} />
+        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount}/>
 
         {accountAddress ? (
           <>
             {result > 0 ? (
               <Button
                 onClick={() => {
-                  if (selectedAddress && algoCoin.amount)
-                    return withdrawAmm(
-                      contractAddress,
-                      appId,
-                      algoCoin.amount,
-                      selectedAddress,
-                      poolToken,
-                      setResponse,
-                      peraWallet
-                    );
+                  if (address)
+                    console.log(123)
                 }}
                 m={4}
                 radius="xl"
               >
                 Withdraw from AMM
-                {algoCoin.amount
-                  ? (
-                      (algoCoin.amount * (poolFundingReserves / 1000000)) /
-                      (poolTokensOutstanding / 1000000)
-                    ).toFixed(6) + 'USDC'
-                  : ''}
               </Button>
             ) : (
               <>
                 <Button
                   onClick={() => {
-                    if (accountAddress && algoCoin.amount)
-                      return supplyAmm(
-                        contractAddress,
-                        appId,
-                        algoCoin.amount,
-                        selectedAddress,
-                        yesToken,
-                        noToken,
-                        poolToken,
-                        setResponse,
-                        peraWallet
-                      );
+                    if (accountAddress)
+                    console.log(123)
                   }}
                   m={4}
                   radius="xl"
                 >
-                  Supply to AMM {algoCoin.amount} {algoCoin.token}
+                  Supply to AMM
                 </Button>
                 <Button
                   onClick={() => {
-                    if (selectedAddress && algoCoin.amount)
-                      return withdrawAmm(
-                        contractAddress,
-                        appId,
-                        algoCoin.amount,
-                        selectedAddress,
-                        poolToken,
-                        setResponse,
-                        peraWallet
-                      );
+                    if (address)
+                      console.log(123)
                   }}
                   m={4}
                   radius="xl"
                 >
-                  Withdraw from AMM{' '}
-                  {algoCoin.amount && poolTokensOutstanding
-                    ? (
-                        (algoCoin?.amount * (poolFundingReserves / 1000000)) /
-                        (poolTokensOutstanding / 1000000)
-                      ).toFixed(6) + ' USDC'
-                    : ''}
+                  Withdraw from AMM
                 </Button>
               </>
             )}
@@ -204,7 +133,7 @@ const Pools = (contractAddress: string, appId: number, peraWallet: PeraWalletCon
         ) : (
           <Button
             onClick={() => {
-              if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
+              if (!address) return connectToTron();
             }}
             m={4}
             radius="xl"

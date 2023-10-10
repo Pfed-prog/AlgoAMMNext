@@ -24,12 +24,12 @@ const PoolsPage = () => {
             p="md"
             sx={{ cursor: 'pointer', alignItems: 'center', justifyContent: 'center' }}
             key={index}
-            href={`/market/${item.appId}`}
+            href={`/market/${item.contractAddress}`}
           >
             <Center>
               <Image width={270} height={200} src={item.image} />
             </Center>
-            <Text align="center" mt="sm" lineClamp={1} size="xl" variant="link" component="a">
+            <Text align="center" mt="sm" lineClamp={1} size="xl" variant="link" component="div">
               {item.question}
             </Text>
           </Paper>

@@ -7,8 +7,7 @@ export interface ResponseState {
 
 export interface StoreState {
   open: boolean;
-  addresses: string[];
-  selectedAddress: string;
+  address: string | null;
   yesToken: number;
   noToken: number;
   poolToken: number;
@@ -27,15 +26,13 @@ export interface StoreState {
   setTokenFundingReserves: (tokenFundingReserves: number) => void;
   setPoolFundingReserves: (poolFundingReserves: number) => void;
   setPoolTokensOutstanding: (poolTokensOutstanding: number) => void;
-  selectAddress: (n: number) => void;
   toggleOpen: () => void;
-  setAddresses: (addresses: string[]) => void;
+  setAddress: (address: string) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
   open: false,
-  addresses: [],
-  selectedAddress: '',
+  address: null,
   yesToken: 0,
   noToken: 0,
   poolToken: 0,
@@ -59,9 +56,8 @@ export const useStore = create<StoreState>((set) => ({
   setPoolTokensOutstanding: (poolTokensOutstanding: number) =>
     set(() => ({ poolTokensOutstanding: poolTokensOutstanding })),
   setResult: (result: number) => set(() => ({ result: result })),
-  setAddresses: (addresses) => set(() => ({ addresses: addresses })),
+  setAddress: (address: string) => set(() => ({ address: address })),
   toggleOpen: () => set((state) => ({ open: !state.open })),
-  selectAddress: (n) => set((state) => ({ selectedAddress: state.addresses[n] })),
 }));
 
 export const useResponse = create<ResponseState>((set) => ({

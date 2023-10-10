@@ -2,13 +2,11 @@ import { Paper, Stack, Button, Group, Badge, Text, Center } from '@mantine/core'
 import { useEffect, useState } from 'react';
 
 import AmountContainer from './AmountContainer';
-import { connectToPera } from '@/utils/connectWallet';
-import { swap, redeem, queryGlobalSwap } from '@/services/transactions';
+
 import { useStore, useResponse } from '@/store/store';
 import { Coin } from '@/store/types';
-import { PeraWalletConnect } from '@perawallet/connect';
 
-const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConnect) => {
+const Swap = (option0: string, option1: string, amount: number, setAmount: Function) => {
   const response = useResponse((state) => state.response);
   const setResponse = useResponse((state) => state.setResponse);
 
@@ -20,10 +18,8 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
   const tokenFundingReserves = useStore((state) => state.tokenFundingReserves);
   const poolFundingReserves = useStore((state) => state.poolFundingReserves);
   const result = useStore((state) => state.result);
-  const selectedAddress = useStore((state) => state.selectedAddress);
+  const address = useStore((state) => state.address);
 
-  const setAddresses = useStore((state) => state.setAddresses);
-  const selectAddress = useStore((state) => state.selectAddress);
   const setYesToken = useStore((state) => state.setYesToken);
   const setNoToken = useStore((state) => state.setNoToken);
   const setPoolToken = useStore((state) => state.setPoolToken);
@@ -60,20 +56,6 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
       return 'No';
     }
   };
-
-  useEffect(() => {
-    queryGlobalSwap(
-      appId,
-      setYesToken,
-      setNoToken,
-      setPoolToken,
-      setYesTokenReserves,
-      setNoTokenReserves,
-      setTokenFundingReserves,
-      setPoolFundingReserves,
-      setResult
-    );
-  }, [response]);
 
   return (
     <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
@@ -152,12 +134,12 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
           </>
         )}
 
-        <AmountContainer coin={coin_2} setCoin={setCoin_2} />
+        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} />
         {result == 0 ? (
           <>
             <Button
               onClick={() => {
-                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
+                /* if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
                 if (selectedAddress && coin_2?.amount)
                   return swap(
                     contractAddress,
@@ -170,12 +152,12 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
                     selectedAddress,
                     setResponse,
                     peraWallet
-                  );
+                  ); */
               }}
               m={4}
               radius="xl"
             >
-              {selectedAddress ? 'Swap' : 'Connect to wallet'}
+              {address ? 'Swap' : 'Connect to wallet'}
             </Button>
 
             {coin_2.amount ? (
@@ -195,9 +177,10 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
         ) : (
           <Button
             onClick={() => {
-              if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
-              if (selectedAddress && coin_2?.amount)
-                return redeem(
+              
+              if (address && coin_2?.amount)
+                console.log(123)
+                /* return redeem(
                   contractAddress,
                   appId,
                   coin_2?.amount,
@@ -207,12 +190,12 @@ const Swap = (contractAddress: string, appId: number, peraWallet: PeraWalletConn
                   selectedAddress,
                   setResponse,
                   peraWallet
-                );
+                ); */
             }}
             m={4}
             radius="xl"
           >
-            {selectedAddress ? 'Redeem' : 'Connect to wallet'}
+            {address ? 'Redeem' : 'Connect to wallet'}
           </Button>
         )}
       </Stack>

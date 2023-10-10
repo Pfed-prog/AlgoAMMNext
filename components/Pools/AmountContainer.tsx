@@ -2,7 +2,7 @@ import { Group, NumberInput, Paper, Select } from '@mantine/core';
 
 import { AmountContainerProps } from '@/store/types';
 
-const AmountContainer = ({ coin, setCoin }: AmountContainerProps) => {
+const AmountContainer = ({ option0, option1, amount, setAmount }: AmountContainerProps) => {
   return (
     <Paper radius="xl" shadow="md" withBorder py={10}>
       <Group position="apart" spacing="xs">
@@ -10,16 +10,16 @@ const AmountContainer = ({ coin, setCoin }: AmountContainerProps) => {
           min={0}
           defaultValue={0}
           precision={6}
-          value={coin?.amount}
-          onChange={(e) => setCoin({ ...coin, amount: e })}
+          value={amount}
+          onChange={(e) => setAmount(e)}
           size="xl"
           variant="unstyled"
           pl={10}
         />
         <Select
-          data={['USDC']}
+          data={[option0, option1]}
           label=""
-          placeholder={coin?.token === 'USDC' ? 'USDC' : 'Select a Token'}
+          placeholder={'Select a Token'}
           radius="xl"
           mx="lg"
         />

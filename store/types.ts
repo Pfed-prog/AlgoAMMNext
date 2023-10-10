@@ -9,8 +9,10 @@ export type Pair = {
 };
 
 export interface AmountContainerProps {
-  coin?: Coin;
-  setCoin: Function;
+  option0: string;
+  option1: string;
+  amount: number;
+  setAmount: Function;
 }
 
 export interface GlobalStateIndices {

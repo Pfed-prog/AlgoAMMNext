@@ -1,442 +1,125 @@
-import { Paper, Stack, Button, Badge, Text, Group, Center, Space } from '@mantine/core';
+import { Paper, Stack, Button, Badge, Text, Image, Center } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { PeraWalletConnect } from '@perawallet/connect';
 
+import PairJson from "@/utils/Pair.json"
 import AmountContainer from '@/components/Pools/AmountContainer';
-import SwapAmountContainer from '@/components/Swap/AmountContainer';
-import { Coin } from '@/store/types';
 import { useStore } from '@/store/store';
-import { connectToPera } from '@/utils/connectWallet';
-import { supplyAmm, withdrawAmm, queryApp, swap, redeem, OptInPool } from '@/services/transactions';
-import { AMMs, usdcId } from 'contracts';
-
-const peraWallet = new PeraWalletConnect({
-  chainId: 416002,
-});
+import { AMMs } from 'contracts';
 
 const MarketPage = () => {
   const router = useRouter();
 
-  const [appId, setAppId] = useState<number | null>();
   const [contractAddress, setContractAddress] = useState<string | null>();
 
-  const [response, setResponse] = useState<string[]>([]);
+  const [question, setQuestion] = useState<string>('');
+  const [image, setImage] = useState<string>('');
+  const [option0, setOption0] = useState<string>('');
+  const [option1, setOption1] = useState<string>('');
 
+  const [amount, setAmount] = useState<number>(0);
+
+  const [resolved, setResolved] = useState<number>(0);
   const [result, setResult] = useState<number>(0);
-  const [poolFundingReserves, setPoolFundingReserves] = useState<number>(0);
-  const [tokenFundingReserves, setTokenFundingReserves] = useState<number>(0);
-  const [yesTokenReserves, setYesTokenReserves] = useState<number>(0);
-  const [noTokenReserves, setNoTokenReserves] = useState<number>(0);
-  const [poolTokensOutstanding, setPoolTokensOutstanding] = useState<number>(0);
 
-  const [algoCoin, setAlgoCoin] = useState<Coin>({
-    token: 'USDC',
-  });
+  const address = useStore((state) => state.address);
 
-  const [coin_2, setCoin_2] = useState<Coin>({
-    token: 'Yes',
-  });
+  const setAddress = useStore((state) => state.setAddress);
 
-  const [poolToken, setPoolToken] = useState<number>(0);
-  const [yesToken, setYesToken] = useState<number>(0);
-  const [noToken, setNoToken] = useState<number>(0);
+  const PairABI = PairJson.abi;
 
-  const selectedAddress = useStore((state) => state.selectedAddress);
+  const queryApp = async (id: string) => {
+    const tronWeb = window.tronWeb;
+    let contractPair = await tronWeb.contract(PairABI, id);
+    console.log(contractPair);
 
-  const setAddresses = useStore((state) => state.setAddresses);
-  const selectAddress = useStore((state) => state.selectAddress);
+    let option0 = await contractPair.option0().call();
+    setOption0(option0);
 
-  const whoWon = () => {
-    if (result === yesToken) {
-      return 'Yes';
+    let option1 = await contractPair.option1().call();
+    setOption1(option1);
+
+    let eventResolved = await contractPair.eventResolved().call();
+    setResolved(eventResolved);
+
+    let eventResult = await contractPair.eventResult().call();
+    setResult(eventResult);
+  } 
+
+  const connectToTron = () => {
+    if (window.tronWeb?.defaultAddress.base58){
+      setAddress(window.tronWeb.defaultAddress.base58)
     }
-    if (result === noToken) {
-      return 'No';
+    if (!window.tronWeb?.defaultAddress.base58){
+      console.log('install tronlink')
     }
-  };
-
-  const amountOut = (reservesIn: number, tokenName: string) => {
-    if (tokenName == 'Yes') {
-      const reservesA = yesTokenReserves / 1000000;
-      const reservesB = noTokenReserves / 1000000;
-      const reservesOut = (reservesIn * reservesA) / (reservesIn + reservesB);
-      return reservesOut.toFixed(6);
-    }
-    if (tokenName == 'No') {
-      const reservesA = noTokenReserves / 1000000;
-      const reservesB = yesTokenReserves / 1000000;
-      const reservesOut = (reservesIn * reservesA) / (reservesIn + reservesB);
-      return reservesOut.toFixed(6);
-    }
-  };
-
-  function handleDisconnectWalletClick() {
-    peraWallet.disconnect();
-
-    setAddresses([]);
-    selectAddress(0);
-  }
-
-  useEffect(() => {
-    peraWallet
-      .reconnectSession()
-      .then((accounts) => {
-        peraWallet.connector?.on('disconnect', handleDisconnectWalletClick);
-
-        setAddresses(accounts);
-
-        if (accounts.length) {
-          selectAddress(0);
-        }
-      })
-      .catch((e) => console.log(e));
-  }, []);
+  } 
 
   useEffect(() => {
     let hydrated = router.isReady;
-    if (hydrated) {
-      const id = Number(router.query.id);
 
-      setAppId(AMMs[id]?.appId);
+    if (hydrated) {
+      const id = String(router.query.id);
+      setQuestion(AMMs[id]?.question)
       setContractAddress(AMMs[id]?.contractAddress);
+      setImage(AMMs[id]?.image)
+
       if (id) {
         queryApp(
-          id,
-          setYesToken,
-          setNoToken,
-          setPoolToken,
-          setYesTokenReserves,
-          setNoTokenReserves,
-          setPoolTokensOutstanding,
-          setPoolFundingReserves,
-          setTokenFundingReserves,
-          setResult
+          id
         );
       }
     }
-  }, [response, router.isReady]);
+  }, [router.isReady]);
 
   return (
     <>
       <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
         <Stack>
-          {result > 0 ? (
-            <>
-              <Badge size="xl" radius="xl" color="gold" component="a">
-                Reserves:
-              </Badge>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                USDC: {(poolFundingReserves / 1000000).toFixed(6)}
-              </Text>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                LP Tokens: {(poolTokensOutstanding / 1000000).toFixed(6)}
-              </Text>
-            </>
-          ) : (
-            <>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                Pool USDC Reserves: {(poolFundingReserves / 1000000).toFixed(6)}
-              </Text>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                LP Tokens Outstanding: {(poolTokensOutstanding / 1000000).toFixed(6)}
-              </Text>
-            </>
-          )}
+          <Badge size="xl" radius="xl" color="gold" component="a">
+            {question}
+          </Badge>
+          <Center>
+              <Image width={270} height={200} src={image} />
+          </Center>
+          <Text
+            component="span"
+            align="center"
+            variant="gradient"
+            gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
+            size="xl"
+            weight={700}
+            style={{ fontFamily: 'Greycliff CF, sans-serif' }}
+          >
+            {option0} - {option1}
+          </Text>
 
-          <AmountContainer coin={algoCoin} setCoin={setAlgoCoin} />
+          <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} />
 
-          {selectedAddress ? (
-            <>
-              {result > 0 ? (
+          {address ? (
                 <Button
                   onClick={() => {
-                    if (selectedAddress && algoCoin.amount && contractAddress && appId)
-                      return withdrawAmm(
-                        contractAddress,
-                        appId,
-                        algoCoin.amount,
-                        selectedAddress,
-                        poolToken,
-                        setResponse,
-                        peraWallet
-                      );
+                    if (address && contractAddress && amount > 0)
+                      console.log(amount)
                   }}
                   m={4}
                   radius="xl"
                 >
-                  Withdraw from AMM
-                  {algoCoin.amount
-                    ? (
-                        (algoCoin.amount * (poolFundingReserves / 1000000)) /
-                        (poolTokensOutstanding / 1000000)
-                      ).toFixed(6) + 'USDC'
-                    : null}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    onClick={() => {
-                      if (selectedAddress && algoCoin.amount && contractAddress && appId)
-                        return supplyAmm(
-                          contractAddress,
-                          appId,
-                          algoCoin.amount,
-                          selectedAddress,
-                          yesToken,
-                          noToken,
-                          poolToken,
-                          setResponse,
-                          peraWallet
-                        );
-                    }}
-                    m={4}
-                    radius="xl"
-                  >
-                    Supply to AMM {algoCoin.amount} {algoCoin.token}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (selectedAddress && algoCoin.amount && contractAddress && appId)
-                        return withdrawAmm(
-                          contractAddress,
-                          appId,
-                          algoCoin.amount,
-                          selectedAddress,
-                          poolToken,
-                          setResponse,
-                          peraWallet
-                        );
-                    }}
-                    m={4}
-                    radius="xl"
-                  >
-                    Withdraw from AMM{' '}
-                    {algoCoin.amount && poolTokensOutstanding
-                      ? (
-                          (algoCoin?.amount * (poolFundingReserves / 1000000)) /
-                          (poolTokensOutstanding / 1000000)
-                        ).toFixed(6) + ' USDC'
-                      : null}
-                  </Button>
-                </>
-              )}
-            </>
+                  Vote
+                </Button>  
           ) : (
             <Button
               onClick={() => {
-                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
+                if (!address) return connectToTron();
               }}
               m={4}
               radius="xl"
             >
-              Connect to Pera wallet
+              Connect to TronLink wallet
             </Button>
           )}
         </Stack>
       </Paper>
-      <Space h="xl" />
-      <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
-        <Stack>
-          {result > 0 ? (
-            <>
-              <Badge size="xl" radius="xl" color="teal">
-                <h3> Winner: {whoWon()}</h3>
-              </Badge>
-
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                USDC left to withdraw: {(tokenFundingReserves / 1000000).toFixed(6)}
-              </Text>
-
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                {whoWon()} left to withdraw: {(tokenFundingReserves / 1000000 / 2).toFixed(6)}
-              </Text>
-            </>
-          ) : (
-            <>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                Token Funding Reserves: {(tokenFundingReserves / 1000000).toFixed(6)} USDC
-              </Text>
-              <Text
-                component="span"
-                align="center"
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                size="xl"
-                weight={700}
-                style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-              >
-                Pool Funding Reserves: {(poolFundingReserves / 1000000).toFixed(6)} USDC
-              </Text>
-              <Group position="center">
-                <Badge size="xl" radius="xl" color="teal">
-                  Yes Reserves: {(yesTokenReserves / 1000000).toFixed(6)}
-                </Badge>
-                <Badge size="xl" radius="xl" color="teal">
-                  No Reserves: {(noTokenReserves / 1000000).toFixed(6)}
-                </Badge>
-              </Group>
-              <Center>
-                {noTokenReserves ? (
-                  <Badge size="xl" radius="xl" color="indigo" variant="light">
-                    Odds:{' '}
-                    {((noTokenReserves / (yesTokenReserves + noTokenReserves)) * 100).toFixed(2)} %
-                    Yes
-                  </Badge>
-                ) : null}
-              </Center>
-            </>
-          )}
-
-          <SwapAmountContainer coin={coin_2} setCoin={setCoin_2} />
-          {result == 0 ? (
-            <>
-              <Button
-                onClick={() => {
-                  if (!selectedAddress)
-                    return connectToPera(setAddresses, selectAddress, peraWallet);
-                  if (selectedAddress && coin_2?.amount && contractAddress && appId)
-                    return swap(
-                      contractAddress,
-                      appId,
-                      coin_2?.amount,
-                      coin_2?.token,
-                      poolToken,
-                      yesToken,
-                      noToken,
-                      selectedAddress,
-                      setResponse,
-                      peraWallet
-                    );
-                }}
-                m={4}
-                radius="xl"
-              >
-                {selectedAddress ? 'Swap' : 'Connect to wallet'}
-              </Button>
-
-              {coin_2.amount ? (
-                <Text
-                  component="span"
-                  align="center"
-                  variant="gradient"
-                  gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                  size="xl"
-                  weight={700}
-                  style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                >
-                  {amountOut(coin_2.amount, coin_2.token)}
-                </Text>
-              ) : null}
-            </>
-          ) : (
-            <Button
-              onClick={() => {
-                if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
-                if (selectedAddress && coin_2?.amount && contractAddress && appId)
-                  return redeem(
-                    contractAddress,
-                    appId,
-                    coin_2?.amount,
-                    coin_2?.token,
-                    yesToken,
-                    noToken,
-                    selectedAddress,
-                    setResponse,
-                    peraWallet
-                  );
-              }}
-              m={4}
-              radius="xl"
-            >
-              {selectedAddress ? 'Redeem' : 'Connect to wallet'}
-            </Button>
-          )}
-        </Stack>
-      </Paper>
-
-      <Space h="lg" />
-
-      {selectedAddress ? (
-        <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
-          <Stack>
-            <Button
-              onClick={() => {
-                if (selectedAddress)
-                  return OptInPool(
-                    selectedAddress,
-                    yesToken,
-                    noToken,
-                    poolToken,
-                    usdcId,
-                    setResponse,
-                    peraWallet
-                  );
-              }}
-              m={4}
-              radius="xl"
-            >
-              Opt In to Pool assets
-            </Button>
-          </Stack>
-        </Paper>
-      ) : null}
     </>
   );
 };
