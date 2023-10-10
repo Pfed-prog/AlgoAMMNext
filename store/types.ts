@@ -13,6 +13,7 @@ export interface AmountContainerProps {
   option1: string;
   amount: number;
   setAmount: Function;
+  setVote: Function;
 }
 
 export interface GlobalStateIndices {

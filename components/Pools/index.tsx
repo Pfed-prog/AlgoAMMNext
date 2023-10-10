@@ -16,20 +16,13 @@ const Pools = (option0: string, option1: string, amount: number, setAmount: Func
     }
   } 
 
-  const yesToken = useStore((state) => state.yesToken);
-  const noToken = useStore((state) => state.noToken);
-  const poolToken = useStore((state) => state.poolToken);
   const result = useStore((state) => state.result);
   const poolFundingReserves = useStore((state) => state.poolFundingReserves);
   const poolTokensOutstanding = useStore((state) => state.poolTokensOutstanding);
   const address = useStore((state) => state.address);
   const setAddress = useStore((state) => state.setAddress);
-  const setYesToken = useStore((state) => state.setYesToken);
-  const setNoToken = useStore((state) => state.setNoToken);
-  const setPoolToken = useStore((state) => state.setPoolToken);
-  const setPoolFundingReserves = useStore((state) => state.setPoolFundingReserves);
-  const setPoolTokensOutstanding = useStore((state) => state.setPoolTokensOutstanding);
-  const setResult = useStore((state) => state.setResult);
+
+  const [vote, setVote] = useState<string>('');
 
   const [accountAddress, setAccountAddress] = useState<string | null>(null);
 
@@ -90,7 +83,7 @@ const Pools = (option0: string, option1: string, amount: number, setAmount: Func
             </Text>
           </>
         )}
-        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount}/>
+        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote}/>
 
         {accountAddress ? (
           <>

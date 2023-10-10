@@ -7,27 +7,14 @@ import { useStore, useResponse } from '@/store/store';
 import { Coin } from '@/store/types';
 
 const Swap = (option0: string, option1: string, amount: number, setAmount: Function) => {
-  const response = useResponse((state) => state.response);
-  const setResponse = useResponse((state) => state.setResponse);
-
   const yesToken = useStore((state) => state.yesToken);
   const noToken = useStore((state) => state.noToken);
-  const poolToken = useStore((state) => state.poolToken);
   const yesTokenReserves = useStore((state) => state.yesTokenReserves);
   const noTokenReserves = useStore((state) => state.noTokenReserves);
   const tokenFundingReserves = useStore((state) => state.tokenFundingReserves);
   const poolFundingReserves = useStore((state) => state.poolFundingReserves);
   const result = useStore((state) => state.result);
   const address = useStore((state) => state.address);
-
-  const setYesToken = useStore((state) => state.setYesToken);
-  const setNoToken = useStore((state) => state.setNoToken);
-  const setPoolToken = useStore((state) => state.setPoolToken);
-  const setYesTokenReserves = useStore((state) => state.setYesTokenReserves);
-  const setNoTokenReserves = useStore((state) => state.setNoTokenReserves);
-  const setTokenFundingReserves = useStore((state) => state.setTokenFundingReserves);
-  const setPoolFundingReserves = useStore((state) => state.setPoolFundingReserves);
-  const setResult = useStore((state) => state.setResult);
 
   const [coin_2, setCoin_2] = useState<Coin>({
     token: 'Yes',
@@ -56,6 +43,8 @@ const Swap = (option0: string, option1: string, amount: number, setAmount: Funct
       return 'No';
     }
   };
+
+  const [vote, setVote] = useState<string>('');
 
   return (
     <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
@@ -134,25 +123,11 @@ const Swap = (option0: string, option1: string, amount: number, setAmount: Funct
           </>
         )}
 
-        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} />
+        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote} />
         {result == 0 ? (
           <>
             <Button
               onClick={() => {
-                /* if (!selectedAddress) return connectToPera(setAddresses, selectAddress, peraWallet);
-                if (selectedAddress && coin_2?.amount)
-                  return swap(
-                    contractAddress,
-                    appId,
-                    coin_2?.amount,
-                    coin_2?.token,
-                    poolToken,
-                    yesToken,
-                    noToken,
-                    selectedAddress,
-                    setResponse,
-                    peraWallet
-                  ); */
               }}
               m={4}
               radius="xl"
@@ -177,20 +152,8 @@ const Swap = (option0: string, option1: string, amount: number, setAmount: Funct
         ) : (
           <Button
             onClick={() => {
-              
               if (address && coin_2?.amount)
                 console.log(123)
-                /* return redeem(
-                  contractAddress,
-                  appId,
-                  coin_2?.amount,
-                  coin_2?.token,
-                  yesToken,
-                  noToken,
-                  selectedAddress,
-                  setResponse,
-                  peraWallet
-                ); */
             }}
             m={4}
             radius="xl"

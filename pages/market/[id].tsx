@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import PairJson from "@/utils/Pair.json"
+import TokenJson from "@/utils/Token.json"
 import AmountContainer from '@/components/Pools/AmountContainer';
 import { useStore } from '@/store/store';
 import { AMMs } from 'contracts';
@@ -17,7 +18,11 @@ const MarketPage = () => {
   const [option0, setOption0] = useState<string>('');
   const [option1, setOption1] = useState<string>('');
 
+  const [vote, setVote] = useState<string>('');
+
   const [amount, setAmount] = useState<number>(0);
+
+  const [reserveToken, setReserveToken] = useState<string>('');
 
   const [resolved, setResolved] = useState<number>(0);
   const [result, setResult] = useState<number>(0);
@@ -27,12 +32,11 @@ const MarketPage = () => {
   const setAddress = useStore((state) => state.setAddress);
 
   const PairABI = PairJson.abi;
+  const TokenABI = TokenJson.abi;
 
   const queryApp = async (id: string) => {
     const tronWeb = window.tronWeb;
-    let contractPair = await tronWeb.contract(PairABI, id);
-    console.log(contractPair);
-
+    const contractPair = await tronWeb.contract(PairABI, id);
     let option0 = await contractPair.option0().call();
     setOption0(option0);
 
@@ -44,7 +48,23 @@ const MarketPage = () => {
 
     let eventResult = await contractPair.eventResult().call();
     setResult(eventResult);
-  } 
+
+    let reserveTokenAddress = await contractPair.reserveToken().call();
+    setReserveToken(reserveTokenAddress);
+  }
+
+  const appVote = async(id: string, option: number) => {
+    const tronWeb = window.tronWeb;
+    const contractPair = await tronWeb.contract(PairABI, id);
+    const contractToken = await tronWeb.contract(TokenABI, reserveToken)
+    if (option === 0){
+      console.log(await contractToken.approve(id, amount).send())
+      await contractPair.voteNo(amount).send();
+    }
+    if (option === 1){
+      await contractPair.voteYes(amount).send();
+    }
+  }
 
   const connectToTron = () => {
     if (window.tronWeb?.defaultAddress.base58){
@@ -59,15 +79,13 @@ const MarketPage = () => {
     let hydrated = router.isReady;
 
     if (hydrated) {
-      const id = String(router.query.id);
-      setQuestion(AMMs[id]?.question)
-      setContractAddress(AMMs[id]?.contractAddress);
-      setImage(AMMs[id]?.image)
+      const id = String(router.query.id)
 
       if (id) {
-        queryApp(
-          id
-        );
+        setQuestion(AMMs[id]?.question)
+        setContractAddress(AMMs[id]?.contractAddress);
+        setImage(AMMs[id]?.image)
+        queryApp(id);
       }
     }
   }, [router.isReady]);
@@ -76,7 +94,7 @@ const MarketPage = () => {
     <>
       <Paper mx="auto" sx={{ maxWidth: 800 }} p="md" radius="xl" withBorder shadow="xl">
         <Stack>
-          <Badge size="xl" radius="xl" color="gold" component="a">
+          <Badge size="xl" radius="xl" color="gold" component="div">
             {question}
           </Badge>
           <Center>
@@ -94,19 +112,22 @@ const MarketPage = () => {
             {option0} - {option1}
           </Text>
 
-          <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} />
+          <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote} />
 
           {address ? (
-                <Button
-                  onClick={() => {
-                    if (address && contractAddress && amount > 0)
-                      console.log(amount)
-                  }}
-                  m={4}
-                  radius="xl"
-                >
-                  Vote
-                </Button>  
+            <Button
+              onClick={async () => {
+                if (address && contractAddress && amount > 0)
+                  if (vote === option0)
+                    appVote(router.query.id as string, 0)
+                  if (vote === option1)
+                    appVote(router.query.id as string, 1)
+              }}
+              m={4}
+              radius="xl"
+            >
+              Vote {vote}
+            </Button>
           ) : (
             <Button
               onClick={() => {
