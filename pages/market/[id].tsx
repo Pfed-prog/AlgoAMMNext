@@ -56,13 +56,16 @@ const MarketPage = () => {
   const appVote = async(id: string, option: number) => {
     const tronWeb = window.tronWeb;
     const contractPair = await tronWeb.contract(PairABI, id);
-    const contractToken = await tronWeb.contract(TokenABI, reserveToken)
+    const contractToken = await tronWeb.contract(TokenABI, reserveToken);
     if (option === 0){
-      console.log(await contractToken.approve(id, amount).send())
-      await contractPair.voteNo(amount).send();
+      let amountToVote = String(amount * 1000000000000000000);
+      console.log(await contractToken.approve(id, amountToVote).send())
+      await contractPair.voteNo(amountToVote).send();
     }
     if (option === 1){
-      await contractPair.voteYes(amount).send();
+      let amountToVote = String(amount * 1000000000000000000);
+      console.log(await contractToken.approve(id, amountToVote).send())
+      await contractPair.voteYes(amountToVote).send();
     }
   }
 
