@@ -123,15 +123,16 @@ const Swap = (option0: string, option1: string, amount: number, setAmount: Funct
           </>
         )}
 
-        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote} />
+        <AmountContainer
+          option0={option0}
+          option1={option1}
+          amount={amount}
+          setAmount={setAmount}
+          setVote={setVote}
+        />
         {result == 0 ? (
           <>
-            <Button
-              onClick={() => {
-              }}
-              m={4}
-              radius="xl"
-            >
+            <Button onClick={() => {}} m={4} radius="xl">
               {address ? 'Swap' : 'Connect to wallet'}
             </Button>
 
@@ -152,8 +153,9 @@ const Swap = (option0: string, option1: string, amount: number, setAmount: Funct
         ) : (
           <Button
             onClick={() => {
-              if (address && coin_2?.amount)
-                console.log(123)
+              if (address && coin_2?.amount) {
+                console.log(123);
+              }
             }}
             m={4}
             radius="xl"

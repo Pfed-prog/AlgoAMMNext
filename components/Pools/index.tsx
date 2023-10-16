@@ -4,17 +4,15 @@ import { useState } from 'react';
 import AmountContainer from './AmountContainer';
 import { useStore } from '@/store/store';
 
-
 const Pools = (option0: string, option1: string, amount: number, setAmount: Function) => {
-
   const connectToTron = () => {
-    if (window.tronWeb?.defaultAddress.base58){
-      setAddress(window.tronWeb.defaultAddress.base58)
+    if (window.tronWeb?.defaultAddress.base58) {
+      setAddress(window.tronWeb.defaultAddress.base58);
     }
-    if (!window.tronWeb?.defaultAddress.base58){
-      console.log('install tronlink')
+    if (!window.tronWeb?.defaultAddress.base58) {
+      console.log('install tronlink');
     }
-  } 
+  };
 
   const result = useStore((state) => state.result);
   const poolFundingReserves = useStore((state) => state.poolFundingReserves);
@@ -83,15 +81,22 @@ const Pools = (option0: string, option1: string, amount: number, setAmount: Func
             </Text>
           </>
         )}
-        <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote}/>
+        <AmountContainer
+          option0={option0}
+          option1={option1}
+          amount={amount}
+          setAmount={setAmount}
+          setVote={setVote}
+        />
 
         {accountAddress ? (
           <>
             {result > 0 ? (
               <Button
                 onClick={() => {
-                  if (address)
-                    console.log(123)
+                  if (address) {
+                    console.log(123);
+                  }
                 }}
                 m={4}
                 radius="xl"
@@ -102,8 +107,9 @@ const Pools = (option0: string, option1: string, amount: number, setAmount: Func
               <>
                 <Button
                   onClick={() => {
-                    if (accountAddress)
-                    console.log(123)
+                    if (accountAddress) {
+                      console.log(123);
+                    }
                   }}
                   m={4}
                   radius="xl"
@@ -112,8 +118,9 @@ const Pools = (option0: string, option1: string, amount: number, setAmount: Func
                 </Button>
                 <Button
                   onClick={() => {
-                    if (address)
-                      console.log(123)
+                    if (address) {
+                      console.log(123);
+                    }
                   }}
                   m={4}
                   radius="xl"

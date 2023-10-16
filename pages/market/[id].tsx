@@ -2,11 +2,11 @@ import { Paper, Stack, Button, Badge, Text, Image, Center } from '@mantine/core'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import PairJson from "@/utils/Pair.json"
-import TokenJson from "@/utils/Token.json"
+import { AMMs } from 'contracts';
+import PairJson from '@/utils/Pair.json';
+import TokenJson from '@/utils/Token.json';
 import AmountContainer from '@/components/Pools/AmountContainer';
 import { useStore } from '@/store/store';
-import { AMMs } from 'contracts';
 
 const MarketPage = () => {
   const router = useRouter();
@@ -37,61 +37,61 @@ const MarketPage = () => {
   const TokenABI = TokenJson.abi;
 
   const queryApp = async (id: string) => {
-    const tronWeb = window.tronWeb;
-    setTronWeb(window.tronWeb)
+    const { tronWeb } = window;
+    setTronWeb(window.tronWeb);
     const contractPair = await tronWeb.contract(PairABI, id);
-    let option0 = await contractPair.option0().call();
+    const option0 = await contractPair.option0().call();
     setOption0(option0);
 
-    let option1 = await contractPair.option1().call();
+    const option1 = await contractPair.option1().call();
     setOption1(option1);
 
-    let eventResolved = await contractPair.eventResolved().call();
+    const eventResolved = await contractPair.eventResolved().call();
     setResolved(eventResolved);
 
-    let eventResult = await contractPair.eventResult().call();
+    const eventResult = await contractPair.eventResult().call();
     setResult(eventResult);
 
-    let reserveTokenAddress = await contractPair.reserveToken().call();
+    const reserveTokenAddress = await contractPair.reserveToken().call();
     setReserveToken(reserveTokenAddress);
-  }
+  };
 
-  const appVote = async(id: string, option: number) => {
-    const tronWeb = window.tronWeb;
+  const appVote = async (id: string, option: number) => {
+    const { tronWeb } = window;
     const contractPair = await tronWeb.contract(PairABI, id);
     const contractToken = await tronWeb.contract(TokenABI, reserveToken);
-    if (option === 0){
-      let amountToVote = String(amount * 1000000000000000000);
-      console.log(await contractToken.approve(id, amountToVote).send())
+    if (option === 0) {
+      const amountToVote = String(amount * 1000000000000000000);
+      console.log(await contractToken.approve(id, amountToVote).send());
       await contractPair.voteNo(amountToVote).send();
     }
-    if (option === 1){
-      let amountToVote = String(amount * 1000000000000000000);
-      console.log(await contractToken.approve(id, amountToVote).send())
+    if (option === 1) {
+      const amountToVote = String(amount * 1000000000000000000);
+      console.log(await contractToken.approve(id, amountToVote).send());
       await contractPair.voteYes(amountToVote).send();
     }
-  }
+  };
 
   const connectToTron = () => {
-    if (window.tronWeb?.defaultAddress.base58){
-      setAddress(window.tronWeb.defaultAddress.base58)
-      setTronWeb(window.tronWeb)
+    if (window.tronWeb?.defaultAddress.base58) {
+      setAddress(window.tronWeb.defaultAddress.base58);
+      setTronWeb(window.tronWeb);
     }
-    if (!window.tronWeb?.defaultAddress.base58){
-      console.log('install tronlink')
+    if (!window.tronWeb?.defaultAddress.base58) {
+      console.log('install tronlink');
     }
-  } 
+  };
 
   useEffect(() => {
-    let hydrated = router.isReady;
+    const hydrated = router.isReady;
 
     if (hydrated) {
-      const id = String(router.query.id)
+      const id = String(router.query.id);
 
       if (id) {
-        setQuestion(AMMs[id]?.question)
+        setQuestion(AMMs[id]?.question);
         setContractAddress(AMMs[id]?.contractAddress);
-        setImage(AMMs[id]?.image)
+        setImage(AMMs[id]?.image);
         queryApp(id);
       }
     }
@@ -105,7 +105,7 @@ const MarketPage = () => {
             {question}
           </Badge>
           <Center>
-              <Image width={270} height={200} src={image} />
+            <Image width={270} height={200} src={image} />
           </Center>
           <Text
             component="span"
@@ -119,16 +119,25 @@ const MarketPage = () => {
             {option0} - {option1}
           </Text>
 
-          <AmountContainer option0={option0} option1={option1} amount={amount} setAmount={setAmount} setVote={setVote} />
+          <AmountContainer
+            option0={option0}
+            option1={option1}
+            amount={amount}
+            setAmount={setAmount}
+            setVote={setVote}
+          />
 
           {address ? (
             <Button
               onClick={async () => {
-                if (address && contractAddress && amount > 0)
-                  if (vote === option0)
-                    appVote(router.query.id as string, 0)
-                  if (vote === option1)
-                    appVote(router.query.id as string, 1)
+                if (address && contractAddress && amount > 0) {
+                  if (vote === option0) {
+                    appVote(router.query.id as string, 0);
+                  }
+                }
+                if (vote === option1) {
+                  appVote(router.query.id as string, 1);
+                }
               }}
               m={4}
               radius="xl"
