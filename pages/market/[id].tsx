@@ -27,7 +27,7 @@ const MarketPage = () => {
   const [resolved, setResolved] = useState<number>(0);
   const [result, setResult] = useState<number>(0);
 
-  const [ TronWeb, sertTronWeb] = useState();
+  const [TronWeb, setTronWeb] = useState();
 
   const address = useStore((state) => state.address);
 
@@ -38,7 +38,7 @@ const MarketPage = () => {
 
   const queryApp = async (id: string) => {
     const tronWeb = window.tronWeb;
-    sertTronWeb(window.tronWeb)
+    setTronWeb(window.tronWeb)
     const contractPair = await tronWeb.contract(PairABI, id);
     let option0 = await contractPair.option0().call();
     setOption0(option0);
@@ -75,7 +75,7 @@ const MarketPage = () => {
   const connectToTron = () => {
     if (window.tronWeb?.defaultAddress.base58){
       setAddress(window.tronWeb.defaultAddress.base58)
-      sertTronWeb(window.tronWeb)
+      setTronWeb(window.tronWeb)
     }
     if (!window.tronWeb?.defaultAddress.base58){
       console.log('install tronlink')
@@ -95,7 +95,7 @@ const MarketPage = () => {
         queryApp(id);
       }
     }
-  }, [router.isReady, TronWeb]);
+  }, [router.isReady, TronWeb, address]);
 
   return (
     <>
