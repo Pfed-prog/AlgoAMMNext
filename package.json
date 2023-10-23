@@ -37,7 +37,7 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.8",
+    "@babel/core": "^7.23.2",
     "@next/eslint-plugin-next": "^13.4.9",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.3",
