@@ -760,12 +760,12 @@
     "@mantine/utils" "6.0.2"
     react-transition-group "4.4.2"
 
-"@mantine/prism@6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@mantine/prism/-/prism-6.0.2.tgz#abd66b0a5b56e776736cee4f67bf1153ecfb2ec0"
-  integrity sha512-fIOpHfpv2BOpCb1kPECRLdNTJY4CkH62JO130a51N7FHEQZlFUnjw557BnW2zYie9wdurKKQ6sEwLkI0bM2CxQ==
+"@mantine/prism@6.0.21":
+  version "6.0.21"
+  resolved "https://registry.yarnpkg.com/@mantine/prism/-/prism-6.0.21.tgz#ad209ecee3d5a92443cf4373a6405ba9bb32bf43"
+  integrity sha512-M9hDUAuuxiINI7f07V0qlX532UXlOTpBqNcG1WWm80t6C0fHjzkTvFj77QpnGS73+MI88mV8ru458y10bQjTBA==
   dependencies:
-    "@mantine/utils" "6.0.2"
+    "@mantine/utils" "6.0.21"
     prism-react-renderer "^1.2.1"
 
 "@mantine/ssr@6.0.16":
@@ -796,6 +796,11 @@
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-6.0.2.tgz#06da9dfb390a026e005f7e2712a3a30373a2b4c3"
   integrity sha512-fx+cmkb8PMpkr65nUs8YgaXFJbtNY+ybSXDfBxwFAWMTLAocbNo7vjkSvPWZVS1O2szPK/s4Rqdw0W76dyG4+w==
+
+"@mantine/utils@6.0.21":
+  version "6.0.21"
+  resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-6.0.21.tgz#6185506e91cba3e308aaa8ea9ababc8e767995d6"
+  integrity sha512-33RVDRop5jiWFao3HKd3Yp7A9mEq4HAJxJPTuYm1NkdqX6aTKOQK7wT8v8itVodBp+sb4cJK6ZVdD1UurK/txQ==
 
 "@next/bundle-analyzer@^13.5.6":
   version "13.5.6"
